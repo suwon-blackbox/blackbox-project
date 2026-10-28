@@ -13,5 +13,8 @@ splits_dir: "data/splits"
 # 선별한 블랙박스 영상을 풀어 둘 곳 (학습 PC로 복사하는 단위)
 raw_dir: "data/raw"
 
+# comma2k19 (Stage 3). zips/ 에 Chunk_N.zip, labels/ 에 생성한 라벨
+comma_dir: "data/comma2k19"
+
 # 공통 전처리 캐시 (프레임·트랙·광류). 팀원끼리 공유하는 파일
 cache_dir: "data/cache"

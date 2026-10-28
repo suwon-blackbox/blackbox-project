@@ -1,0 +1,16 @@
+# Stage 3 차량 거동 라벨 기준 (comma2k19에서 자동 생성)
+# 값을 바꾸면 scripts/build_comma_labels.py 를 다시 실행한다.
+
+bin_sec: 0.1             # 라벨 간격 (0.1초 = comma2k19 영상 2프레임)
+smooth_sec: 0.5          # 속도·각속도를 이 폭으로 평균 낸 뒤 미분 (CAN 잡음 제거)
+
+longitudinal:            # 가속 / 감속 / 정속
+  accel_mps2: 0.3        # 가속도 > +0.3 m/s² → 가속
+  decel_mps2: -0.3       # 가속도 < -0.3 m/s² → 감속, 그 사이는 정속
+
+lateral:                 # 좌 / 우 / 직진
+  # 조향각보다 실제 회전(IMU 요레이트)이 영상의 화면 회전과 직접 대응해서 요레이트를 쓴다
+  yaw_rate_dps: 2.0      # |요레이트| > 2 deg/s → 좌/우, 아니면 직진
+  min_speed_mps: 1.0     # 이보다 느리면 직진으로 둔다 (정지 중 센서 잡음)
+
+test_percent: 20         # route(주행 1회) 단위 해시 분할. 같은 주행의 1분 조각이 train/test에 섞이지 않게

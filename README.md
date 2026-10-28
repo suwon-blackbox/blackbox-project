@@ -85,6 +85,25 @@ python scripts/make_splits.py --annotators 이름1 이름2 이름3 이름4 이�
 
 라벨링 기준은 [docs/labeling_guide.md](docs/labeling_guide.md).
 
+## 4단계: comma2k19 (Stage 3 정답)
+
+comma.ai 공식 Hugging Face 미러(`commaai/comma2k19`, MIT)에서 Chunk 단위(각 약 9~10GB, 총 10개)로 받는다.
+Chunk 1~2는 RAV4, 3~10은 Civic이다.
+
+```bash
+cd data/comma2k19/zips
+curl -L -C - -o Chunk_1.zip https://huggingface.co/datasets/commaai/comma2k19/resolve/main/raw_data/Chunk_1.zip
+sha256sum -c SHA256SUMS --ignore-missing
+cd ../../..
+python scripts/build_comma_labels.py --chunks Chunk_1
+```
+
+- `data/comma2k19/labels/Chunk_N.csv.gz` — 0.1초 구간 1개당 1행. 속도·가속도·요레이트·조향각과 `long_label`(가속/감속/정속), `lat_label`(좌/우/직진), 영상 프레임 위치 `frame_start`
+- 기준값은 [configs/stage3.yaml](configs/stage3.yaml) (가속도 ±0.3 m/s², 요레이트 ±2 deg/s). 대회 정의와 다를 수 있으니 클래스 비율을 보고 조정한다
+- 평가용 분할은 route(주행 1회) 단위 해시 20%. 같은 주행의 1분 조각이 train/test에 섞이지 않는다
+- 확인한 사실: 영상 20fps·1분 조각(1200프레임), `steering_angle`은 +가 좌회전, IMU gyro z(+)는 우회전
+- **AI Hub 영상은 15fps, comma2k19는 20fps**다. Stage 3 모델 입력은 시간(0.1초) 기준으로 맞춰야 두 데이터에 모두 쓸 수 있다
+
 ## 데이터 다룰 때 규칙
 
 AI Hub 약관상 승인 없는 배포·제3자 제공이 금지되어 있고, 해외 서비스(클라우드, AI 도구)로 보내도 되는지는 확인 중이다.
@@ -103,5 +122,6 @@ notebooks/      탐색·실험
 data/inventory/ 인벤토리 CSV (git 제외)
 data/raw/       선별해 풀어 둔 영상 (git 제외)
 data/cache/     전처리 캐시 (git 제외)
+data/comma2k19/ comma2k19 zip과 Stage 3 라벨 (git 제외)
 docs/           라벨링 기준표, 회의록
 ```
