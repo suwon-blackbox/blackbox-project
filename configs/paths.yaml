@@ -7,6 +7,9 @@ aihub_root: "AI_HUB_data/095.교통사고 영상 데이터/01.데이터"
 # 인벤토리 CSV 출력 위치
 inventory_dir: "data/inventory"
 
+# 우리 학습/평가 분할과 라벨링 대상 목록 (scripts/make_splits.py 출력)
+splits_dir: "data/splits"
+
 # 선별한 블랙박스 영상을 풀어 둘 곳 (학습 PC로 복사하는 단위)
 raw_dir: "data/raw"
 

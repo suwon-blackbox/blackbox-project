@@ -4,6 +4,7 @@ pandas
 opencv-python
 tqdm
 pyyaml
+pdfplumber         # 데이터설명서 표 파싱 (scripts/parse_accident_types.py)
 
 # 학습 PC(5060 / 4060)에서는 PyTorch를 CUDA 12.8 빌드로 먼저 설치한 뒤 나머지를 설치:
 #   pip install torch torchvision --index-url https://download.pytorch.org/whl/cu128
