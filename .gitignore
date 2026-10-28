@@ -1,0 +1,29 @@
+# 원본 데이터 (130GB) — git에 올리지 않음
+AI_HUB_data/
+data/raw/
+data/cache/
+data/comma2k19/
+
+# 생성물
+data/inventory/*.csv
+!data/inventory/.gitkeep
+runs/
+outputs/
+*.pt
+*.pth
+*.onnx
+*.ckpt
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# 도구
+.vscode/
+.idea/
+wandb/
+*.log
+configs/paths.local.yaml

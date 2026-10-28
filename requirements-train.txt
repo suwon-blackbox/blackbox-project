@@ -1,0 +1,6 @@
+# 학습 PC 전용 (torch는 requirements.txt 주석 참고)
+ultralytics        # YOLO 검출 + ByteTrack 추적
+timm               # EfficientNet / ConvNeXt-Tiny 백본
+scikit-learn
+matplotlib
+wandb
