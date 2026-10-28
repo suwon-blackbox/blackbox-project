@@ -63,7 +63,7 @@ Windows 콘솔에서 한글이 깨지면 `python -X utf8 ...`로 실행한다.
 
 ### AI Hub 라벨 구조 (확인한 내용)
 
-- **영상 라벨** (`*_영상_*.zip`): 영상 1건당 JSON 1개. 영상 단위 메타데이터만 있고 **충돌·진입 시점은 없다** → Stage 2용 300건은 직접 라벨링 (계획서대로).
+- **영상 라벨** (`*_영상_*.zip`): 영상 1건당 JSON 1개. 영상 단위 메타데이터만 있고 **충돌·진입 시점은 없다** → Stage 2용 200건은 직접 라벨링 (2인 팀이라 계획서 300건에서 줄임).
 - **이미지 라벨** (`*_이미지_*.zip`): 영상별 폴더 안에 프레임별 JSON. `objects[]`에 bbox(x, y, w, h)와 `isObjectA`/`isObjectB`(사고 당사자 차량 표시)가 있다 → 상대 차량 검출·추적 학습과 검증에 바로 쓸 수 있다.
 - **주의 — AI Hub의 train/val은 영상 단위가 아니다.** 영상 라벨은 train 17,645건 / val 2,207건으로 나뉘지만, 이미지(프레임) 라벨은 같은 영상의 프레임을 약 8:1로 TL/VL에 나눠 넣었다. 따라서 VL 이미지 라벨로 검증하면 학습에 본 영상이 섞인다. **우리 평가용 20%는 `videos.csv`에서 영상 단위로 직접 떼어낸다** (계획서 4장).
 - `video_point_of_view`: 1이 17,071건, 3이 2,781건. `filming_way`: bb(블랙박스) 19,720건, cc(CCTV) 132건 → cc는 제외.
@@ -89,8 +89,8 @@ python scripts/make_splits.py --annotators 정식 팀원 --extract
 ```
 
 - `data/splits/video_split.csv` — 영상 이름 해시로 20%를 평가용(test)으로 고정 (15,841 / 4,011). 같은 스크립트를 돌리면 누구나 같은 분할이 나온다
-- `data/splits/stage2_labeling.csv` — Stage 2 시점 라벨링 300건. 블랙박스·1인칭·코드 확인된 영상 중, 차대차 끼어들기류 120 / 차대차 기타 60 / 이륜차 50 / 자전거 35 / 보행자 35. 사고유형 225종이 섞이고, 50건은 두 사람이 중복 라벨링 (1인당 175건)
-- `--extract` — 대상 영상 300개(2.1GB)를 `data/raw/stage2_labeling/`에 푼다 (약 1분)
+- `data/splits/stage2_labeling.csv` — Stage 2 시점 라벨링 200건. 블랙박스·1인칭·코드 확인된 영상 중, 차대차 끼어들기류 80 / 차대차 기타 40 / 이륜차 30 / 자전거 25 / 보행자 25. 30건은 두 사람이 중복 라벨링 (1인당 115건)
+- `--extract` — 대상 영상 200개를 `data/raw/stage2_labeling/`에 푼다 (약 1분)
 
 라벨링 기준은 [docs/labeling_guide.md](docs/labeling_guide.md).
 
