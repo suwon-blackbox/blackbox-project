@@ -28,3 +28,6 @@ venv/
 wandb/
 *.log
 configs/paths.local.yaml
+
+# AI Hub 배포 문서 (데이터설명서 등) — 재배포 금지라 git 제외
+docs/aihub/

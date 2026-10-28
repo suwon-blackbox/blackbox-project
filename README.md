@@ -67,7 +67,7 @@ Windows 콘솔에서 한글이 깨지면 `python -X utf8 ...`로 실행한다.
 
 ```bash
 pip install pdfplumber
-python scripts/parse_accident_types.py "1-56 교통사고 영상 데이터_데이터설명서(수정)_250328.pdf"
+python scripts/parse_accident_types.py "docs/aihub/1-56 교통사고 영상 데이터_데이터설명서(수정)_250328.pdf"
 ```
 
 코드에서는 `src.common.inventory.load_videos()`로 인벤토리와 코드표를 합쳐 읽는다.

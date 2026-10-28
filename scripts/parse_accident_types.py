@@ -7,7 +7,7 @@
 
 실행:
   pip install pdfplumber
-  python scripts/parse_accident_types.py "1-56 교통사고 영상 데이터_데이터설명서(수정)_250328.pdf"
+  python scripts/parse_accident_types.py "docs/aihub/1-56 교통사고 영상 데이터_데이터설명서(수정)_250328.pdf"
 """
 import argparse
 import csv
