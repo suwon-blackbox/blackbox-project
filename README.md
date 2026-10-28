@@ -33,6 +33,14 @@ Stage 사이에 주고받는 파일 형식과 최종 출력은 [docs/interfaces.
 
 원본 영상은 PC마다 복사하지 않는다. 선별한 영상만 4060 PC로 한 번 옮기고, 거기서 만든 캐시(`data/cache/`)를 나눠 받는다.
 
+## 새 PC에서 처음 할 일
+
+```bash
+pip install -r requirements.txt
+python scripts/check_env.py        # GPU·CUDA·PyTorch·영상 디코딩·경로 점검. FAIL이 0개여야 함
+python -m pytest                   # 공통 코드 테스트
+```
+
 ## 설치
 
 ```bash
@@ -92,7 +100,7 @@ python scripts/make_splits.py --annotators 정식 팀원 --extract
 - `data/splits/stage2_labeling.csv` — Stage 2 시점 라벨링 200건. 블랙박스·1인칭·코드 확인된 영상 중, 차대차 끼어들기류 80 / 차대차 기타 40 / 이륜차 30 / 자전거 25 / 보행자 25. 30건은 두 사람이 중복 라벨링 (1인당 115건)
 - `--extract` — 대상 영상 200개를 `data/raw/stage2_labeling/`에 푼다 (약 1분)
 
-라벨링 기준은 [docs/labeling_guide.md](docs/labeling_guide.md).
+라벨링은 `python scripts/label_stage2.py --annotator 정식` (설치 필요 없는 자체 도구). 기준과 키 조작은 [docs/labeling_guide.md](docs/labeling_guide.md).
 
 ## 4단계: comma2k19 (Stage 3 정답)
 
@@ -133,7 +141,8 @@ AI Hub 약관상 승인 없는 배포·제3자 제공이 금지되어 있고, �
 
 ```
 configs/        경로·학습 설정 (yaml)
-src/common/     공통 전처리, 경로 유틸
+src/common/     영상 읽기(video.py), 캐시 형식(cache.py), 경로, 인벤토리
+tests/          공통 코드 테스트 (python -m pytest)
 src/stage1_rebroadcast/
 src/stage2_timing/
 src/stage3_egomotion/

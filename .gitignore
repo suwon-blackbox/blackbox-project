@@ -7,6 +7,7 @@ data/comma2k19/
 # 생성물
 data/inventory/*.csv
 data/splits/
+data/labels/
 !data/inventory/.gitkeep
 runs/
 outputs/

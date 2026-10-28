@@ -12,7 +12,7 @@
 
 ## 라벨 항목
 
-프레임 번호는 0부터 센다 (0 ~ 149). AI Hub 프레임 라벨의 `sequence_frame_number`와 같다.
+프레임 번호는 0부터 센다 (0 ~ 149). **AI Hub 프레임 라벨의 `sequence_frame_number`는 1부터(1 ~ 150)라서 1을 빼야 같은 프레임이다.** 라벨링 도구는 이미 빼서 보여준다.
 
 | 항목 | 값 | 정의 |
 |---|---|---|
@@ -20,7 +20,7 @@
 | `entry_frame` | 정수 / 빈칸 | 상대가 **내 차로 안으로 들어오기 시작한** 프레임 = 상대 바퀴(또는 차체 끝)가 차선을 처음 넘는 프레임. 끼어들기·진로변경이 아니면 빈칸 |
 | `entry_side` | `left` / `right` / `front` / `rear` / `none` | 상대가 들어온 방향 (내 차 기준) |
 | `avoidable_space` | `yes` / `no` / `unknown` | 진입 시점에 내 차가 피할 수 있는 빈 차로·갓길이 보였는가 |
-| `opponent_box` | bbox | `collision_frame`에서의 상대 bbox. AI Hub 프레임 라벨의 `isObjectA`/`isObjectB` 박스가 있으면 그것을 확인만 한다 |
+| `opponent_box` | (자동) | 따로 표시하지 않는다. 1인칭에서 상대는 사고객체 A라서 AI Hub의 `isObjectA` 박스(도구에서 빨간 박스)를 쓴다 |
 | `quality` | `ok` / `occluded` / `no_collision` / `bad_video` | 판단이 어려운 영상 표시 |
 | `memo` | 글 | 애매했던 이유 |
 
@@ -39,5 +39,27 @@
 
 ## 도구
 
-CVAT(무료, 로컬 설치 가능)의 비디오 태스크에서 프레임 태그로 표시한 뒤 CSV로 내보낸다.
-이 PC에 CVAT를 띄우면 영상을 외부로 올리지 않아도 된다 (AI Hub 약관 확인 전 권장).
+설치가 필요 없는 자체 도구를 쓴다 (CVAT는 Docker가 필요해서 대신 만듦). 영상은 PC 밖으로 나가지 않는다.
+
+```bash
+python scripts/label_stage2.py --annotator 정식      # 또는 --annotator 팀원
+```
+
+- 내 담당 영상만 열리고, **두 사람이 같이 하는 30건이 먼저** 나온다 (먼저 10건씩 하고 비교)
+- 처음 실행할 때 AI Hub 상대 차량 박스 색인을 만든다 (약 1분, 한 번만)
+- 빨간 박스 = AI Hub 사고객체 A(상대). 아래 막대의 회색 눈금 = 박스가 있는 프레임, 빨강 = 충돌, 초록 = 진입
+- Enter를 누를 때마다 `data/labels/stage2/<이름>.csv`에 저장된다. 껐다 켜면 이어서 한다
+- 빠진 항목이 있으면 Enter를 한 번 막고 알려준다 (한 번 더 누르면 그대로 저장)
+
+| 키 | 동작 |
+|---|---|
+| ← → / A D | 1프레임 이동 |
+| ↑ ↓ / W S | 10프레임 이동 |
+| Space | 재생·정지 |
+| C / E / X | 충돌 프레임 / 진입 프레임 / 진입 없음 |
+| 1 2 3 4 0 | 진입 방향 left / right / front / rear / none |
+| Y N U | 피할 공간 yes / no / unknown |
+| Q | 품질 ok → occluded → no_collision → bad_video |
+| M | 메모 (터미널에 입력) |
+| B / H | AI Hub 박스 보이기 / 도움말 |
+| Enter / P / Esc | 저장 후 다음 / 이전 / 저장 후 종료 |

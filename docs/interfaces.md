@@ -30,12 +30,22 @@ GPU가 있는 곳과 하는 일을 맞췄다. 아래 표의 "담당" 열은 이 
 | 항목 | 규칙 | 이유 |
 |---|---|---|
 | **시간 기준** | 모든 시점은 **초 단위 `t`** (영상 시작 = 0.0). `t = frame / fps` | AI Hub 15fps, comma2k19 20fps, 실제 블랙박스는 제각각 → 프레임 번호로는 비교 불가 |
-| 프레임 번호 | 0부터. 원본 영상 기준 (추출 간격과 무관) | AI Hub `sequence_frame_number`와 같음 |
+| 프레임 번호 | 0부터. 원본 영상 기준 (추출 간격과 무관) | **AI Hub `sequence_frame_number`는 1부터라 1을 뺀다** |
 | 좌표 | 원본 해상도 픽셀, bbox는 **`[x, y, w, h]` (좌상단 기준)** | AI Hub 라벨과 같은 형식 |
 | 좌우 | **내 차(블랙박스 차량) 기준**. 화면 왼쪽 = left | 1인칭 영상 기준 |
 | 거동 구간 | 0.1초. 구간 `k`는 `[0.1k, 0.1k+0.1)` 이고 대표 시각은 시작값 `t = 0.1k` | Stage 3 정답 간격 |
 | 결측 | 값이 없으면 `null` (JSON) / 빈칸 (CSV). 0이나 -1로 채우지 않는다 | 0이 실제 값일 수 있음 |
 | video_id | 확장자 뺀 파일 이름. comma2k19는 `route|segment` → `route_segment` | 폴더 이름에 `|` 사용 불가 |
+
+## 코드로 구현된 부분
+
+이 문서의 규칙은 `src/common/`에 코드로 들어 있다. **직접 구현하지 말고 이 모듈을 쓴다.**
+
+- `src/common/video.py` — `open_video()`, `open_comma_segment()`: 프레임별 시각(`times`), `frame_at(t)`, `iter_frames(start_t, end_t)`.
+  comma의 날 HEVC는 OpenCV가 fps를 25로 잘못 읽으므로 반드시 `frame_times`로 연다 (안 주면 에러)
+- `src/common/cache.py` — `write_meta/read_meta`, `write_tracks/read_tracks`, `write_flow/read_flow`, `time_bins()`.
+  쓰고 읽을 때 형식·버전을 검사해서 틀리면 바로 에러를 낸다
+- `tests/test_common.py` — 위 규칙의 테스트. 고친 뒤에는 `python -m pytest`
 
 ## 1. 공통 전처리 캐시
 
