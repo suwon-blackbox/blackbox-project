@@ -8,7 +8,7 @@ zip을 풀지 않고 각 1분 조각(segment)의 numpy 배열만 읽는다. 영�
   - IMU gyro 20Hz, 축 [전방, 우측, 아래] → z(+)가 우회전. 조향각과 상관 -0.7 ~ -0.99로 부호 확인
 
 출력: comma_dir/labels/<Chunk_N>.csv.gz  — 0.1초 구간 1개당 1행
-  segment, route, split, bin, t, frame_start, speed, accel, yaw_rate_dps, steering_deg, long_label, lat_label
+  segment, route, split, bin(=구간 번호, t=0.1·bin), t(구간 시작 초), frame_start, speed, accel, yaw_rate_dps, steering_deg, long_label, lat_label
 
 실행:
   python scripts/build_comma_labels.py                    # zips/ 안의 모든 Chunk
@@ -27,6 +27,7 @@ import yaml
 from tqdm import tqdm
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from src.common.cache import time_bins  # noqa: E402
 from src.common.paths import PROJECT_ROOT, load_paths  # noqa: E402
 
 LONG_NAMES = np.array(["감속", "정속", "가속"])
@@ -55,11 +56,14 @@ def segment_labels(z: zipfile.ZipFile, seg: str, cfg: dict) -> pd.DataFrame:
     st_t, st = load("processed_log/CAN/steering_angle/t"), load("processed_log/CAN/steering_angle/value").ravel()
     g_t, gyro = load("processed_log/IMU/gyro/t"), load("processed_log/IMU/gyro/value")
 
-    fps = 1.0 / np.median(np.diff(frame_t))
-    frames_per_bin = max(1, int(round(cfg["bin_sec"] * fps)))
-    starts = np.arange(0, len(frame_t) - frames_per_bin + 1, frames_per_bin)
-    # 구간 중앙 시각에서 값을 잰다
-    centers = frame_t[starts] + cfg["bin_sec"] / 2
+    # 구간은 시간으로 정한다 (docs/interfaces.md): 구간 k = [0.1k, 0.1k+0.1)초, 값은 구간 중앙에서 잰다.
+    # 센서가 없는 구간을 버려도 bin 번호는 다시 매기지 않는다 → 예측 배열의 k번째와 항상 같은 시각
+    rel_t = frame_t - frame_t[0]
+    duration = rel_t[-1] + np.median(np.diff(rel_t))
+    bin_start = time_bins(duration, cfg["bin_sec"])
+    bins = np.arange(len(bin_start))
+    starts = np.searchsorted(rel_t, bin_start - 1e-9, side="left")
+    centers = frame_t[0] + bin_start + cfg["bin_sec"] / 2
 
     # 0.01초 격자로 보간 → 이동평균 → 미분. 센서 시작/끝 바깥 구간은 버린다
     t0 = max(frame_t[0], sp_t[0], g_t[0])
@@ -71,7 +75,7 @@ def segment_labels(z: zipfile.ZipFile, seg: str, cfg: dict) -> pd.DataFrame:
     yaw_g = moving_average(np.interp(grid, g_t, gyro[:, 2]), n_smooth)
 
     valid = (centers >= t0) & (centers <= t1)
-    starts, centers = starts[valid], centers[valid]
+    bins, bin_start, starts, centers = bins[valid], bin_start[valid], starts[valid], centers[valid]
     speed = np.interp(centers, grid, speed_g)
     accel = np.interp(centers, grid, accel_g)
     # gyro z(+) = 우회전 → 좌회전을 +로 쓰기 위해 부호를 뒤집는다 (조향각과 같은 방향)
@@ -88,8 +92,8 @@ def segment_labels(z: zipfile.ZipFile, seg: str, cfg: dict) -> pd.DataFrame:
         "segment": seg.split("/", 1)[1],
         "route": route,
         "split": route_split(route, cfg["test_percent"]),
-        "bin": np.arange(len(starts)),
-        "t": np.round(centers - frame_t[0], 3),
+        "bin": bins,
+        "t": bin_start,
         "frame_start": starts,
         "speed": speed.round(3),
         "accel": accel.round(3),

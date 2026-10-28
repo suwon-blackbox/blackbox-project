@@ -132,6 +132,29 @@ python scripts/make_weak_labels.py --extract     # 약한 정답 8,335건 + 점�
 python scripts/eval_stage3_weak.py --baseline straight
 ```
 
+## 실행 뼈대와 평가
+
+영상 → 세 Stage → 출력 JSON까지 처음부터 끝까지 도는 뼈대가 있다. 지금은 Stage마다 베이스라인이 들어 있고,
+모델이 준비되면 `src/pipeline.py`의 `PREDICTORS`에 등록한 뒤 `configs/pipeline.yaml`에서 이름만 바꾼다.
+
+```bash
+python scripts/run_inference.py --input data/raw/stage2_labeling --out outputs/<실험>/aihub
+python scripts/run_inference.py --comma Chunk_1 --split test --out outputs/<실험>/comma
+
+python scripts/eval_stage2.py --pred-dir outputs/<실험>/aihub      # 사람 라벨과 비교 (0.2초·0.5초 이내 비율)
+python scripts/eval_stage2.py --agreement                           # 두 라벨러 일치도
+python scripts/eval_stage3.py --pred-dir outputs/<실험>/comma       # comma 센서 정답 (0.1초 구간)
+python scripts/eval_stage3_weak.py --pred-dir outputs/<실험>/aihub  # AI Hub 약한 정답 (한국 영상 확인)
+```
+
+**넘어야 할 베이스라인** (2026-10-28 기준)
+
+| | 베이스라인 | 점수 |
+|---|---|---|
+| Stage 2 충돌 시점 | 항상 영상 가운데(75프레임) | 사람 라벨이 모이면 측정 |
+| Stage 3 comma test (153조각, 2.5시간) | 항상 정속·직진 | 균형 정답률 종방향 33.3%, 좌우 33.3%, 9조합 11.1% (단순 정답률은 67.8% / 84.7%로 높아 보이니 주의) |
+| Stage 3 AI Hub 약한 정답 | 항상 직진 | 좌우 균형 정답률 33.3% |
+
 ## 데이터 다룰 때 규칙
 
 AI Hub 약관상 승인 없는 배포·제3자 제공이 금지되어 있고, 해외 서비스(클라우드, AI 도구)로 보내도 되는지는 확인 중이다.

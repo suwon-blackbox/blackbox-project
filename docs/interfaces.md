@@ -45,7 +45,9 @@ GPU가 있는 곳과 하는 일을 맞췄다. 아래 표의 "담당" 열은 이 
   comma의 날 HEVC는 OpenCV가 fps를 25로 잘못 읽으므로 반드시 `frame_times`로 연다 (안 주면 에러)
 - `src/common/cache.py` — `write_meta/read_meta`, `write_tracks/read_tracks`, `write_flow/read_flow`, `time_bins()`.
   쓰고 읽을 때 형식·버전을 검사해서 틀리면 바로 에러를 낸다
-- `tests/test_common.py` — 위 규칙의 테스트. 고친 뒤에는 `python -m pytest`
+- `src/common/output.py` — `validate_output()`: 최종 출력 JSON 검사 (`write_output()`이 쓰기 전에 자동으로 부른다)
+- `src/pipeline.py` — 영상 1개 → 세 Stage → 출력 JSON. Stage별 예측기를 `PREDICTORS`에 등록하고 `configs/pipeline.yaml`에서 고른다
+- `tests/` — 위 규칙의 테스트. 고친 뒤에는 `python -m pytest`
 
 ## 1. 공통 전처리 캐시
 
@@ -127,9 +129,10 @@ Stage 1은 원본 영상에서 직접 프레임을 읽고, 저장이 필요하�
 | `stage2.avoidable_space` | `yes` / `no` / `unknown` | B | 진입 순간 피할 빈 공간 |
 | `stage2.opponent` | `{track_id, bbox_at_collision}` 또는 `null` | B | `tracks.csv`의 ID |
 | `stage3.bin_sec` | `0.1` | A | |
+| `stage3.classes_long`, `stage3.classes_lat` | 고정 | A | `["가속", "감속", "정속"]`, `["좌", "직진", "우"]` — `p_long`, `p_lat`의 열 순서 |
 | `stage3.long` | str 배열 (길이 K) | A | `가속` / `감속` / `정속` |
-| `stage3.lat` | str 배열 (길이 K) | A | `좌` / `우` / `직진` |
-| `stage3.p_long`, `stage3.p_lat` | `(K, 3)` 배열 | A | 클래스 순서는 위 나열 순서. 기준값 재조정용 |
+| `stage3.lat` | str 배열 (길이 K) | A | `좌` / `직진` / `우` |
+| `stage3.p_long`, `stage3.p_lat` | `(K, 3)` 배열 | A | 행마다 합 1. 기준값 재조정용 |
 | `runtime_sec` | `{preprocess, stage1, stage2, stage3}` | A | 60분 제한 관리용 |
 
 - Stage 3은 행 목록 대신 **배열**로 낸다 (10초 영상이면 길이 100). 파일이 작고 읽기 쉽다

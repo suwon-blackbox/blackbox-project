@@ -1,0 +1,7 @@
+# 각 Stage에 쓸 예측기 이름 (src/pipeline.py 의 PREDICTORS). 모델이 생기면 이름만 바꾼다.
+stage1: majority     # 항상 원본
+stage2: middle       # 충돌 = 영상 가운데 (AI Hub 10초 클립이면 75프레임)
+stage3: constant     # 항상 정속·직진
+
+# 대회 조건: L40S 1장, 전체 60분
+time_limit_min: 60
