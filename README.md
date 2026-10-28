@@ -113,6 +113,17 @@ python scripts/build_comma_labels.py --chunks Chunk_1
 - 확인한 사실: 영상 20fps·1분 조각(1200프레임), `steering_angle`은 +가 좌회전, IMU gyro z(+)는 우회전
 - **AI Hub 영상은 15fps, comma2k19는 20fps**다. Stage 3 모델 입력은 시간(0.1초) 기준으로 맞춰야 두 데이터에 모두 쓸 수 있다
 
+### Stage 3 한국 영상 확인: AI Hub 약한 정답
+
+AI Hub에는 내 차 센서값이 없어 0.1초 정답을 만들 수 없다. 대신 사고유형의 B(=1인칭에서 내 차) 진행정보 글로
+"충돌 직전 대체로 좌회전/우회전/직진/정지"라는 영상 단위 기대값을 자동으로 만들어 평가에 쓴다 (사람 라벨링 없음).
+틀린 것이 섞여 있어서 50건만 사람이 확인해 오류율을 잰다. 자세한 내용은 [docs/stage3_weak_eval.md](docs/stage3_weak_eval.md).
+
+```bash
+python scripts/make_weak_labels.py --extract     # 약한 정답 8,335건 + 점검 목록 50건
+python scripts/eval_stage3_weak.py --baseline straight
+```
+
 ## 데이터 다룰 때 규칙
 
 AI Hub 약관상 승인 없는 배포·제3자 제공이 금지되어 있고, 해외 서비스(클라우드, AI 도구)로 보내도 되는지는 확인 중이다.

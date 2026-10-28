@@ -1,0 +1,13 @@
+# Stage 3 약한 정답 (AI Hub B 진행정보 → 내 차의 기대 거동)
+# 1인칭 영상에서는 내 차가 사고객체 B (데이터설명서 19쪽)
+
+# 판단 구간: AI Hub 클립은 사고 시점 앞뒤 5초로 잘려 있다 → 충돌 직전 2초
+window_start_sec: 3.0
+window_end_sec: 5.0
+# 구간 안에서 기대 라벨이 이 비율 이상 나오면 "맞음"
+hit_ratio: 0.5
+
+# 사람 점검 목록
+check_n_high: 40      # 신뢰도 high에서
+check_n_medium: 10    # 신뢰도 medium(직진)에서
+checkers: ["정식", "팀원"]
