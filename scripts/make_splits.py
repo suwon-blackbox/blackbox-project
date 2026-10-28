@@ -13,7 +13,7 @@
 실행:
   python scripts/make_splits.py                       # CSV만 생성
   python scripts/make_splits.py --extract             # 라벨링 대상 영상을 data/raw/stage2_labeling/ 에 풀기
-  python scripts/make_splits.py --annotators 정식 A B C D
+  python scripts/make_splits.py --annotators 정식 팀원
 """
 import argparse
 import hashlib
@@ -97,7 +97,7 @@ def extract_videos(df: pd.DataFrame, aihub_root: Path, out_dir: Path) -> None:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--annotators", nargs="+", default=["A", "B", "C", "D", "E"])
+    ap.add_argument("--annotators", nargs="+", default=["A", "B"])
     ap.add_argument("--extract", action="store_true", help="라벨링 대상 영상을 data/raw/stage2_labeling/ 에 풀기")
     args = ap.parse_args()
 

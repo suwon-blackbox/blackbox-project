@@ -12,6 +12,15 @@
 
 세 Stage는 `src/common/`의 공통 전처리(프레임 추출 → 차량 검출·추적 → 광류)를 공유한다.
 
+## 팀 (2명)
+
+| 역할 | 장비 | 맡는 것 |
+|---|---|---|
+| A (박정식) | 데이터 PC + RTX 5060 8GB | 데이터 관리, 통합·60분 최적화, Stage 1, Stage 3 |
+| B (팀원) | RTX 4060 16GB | 공통 전처리 캐시, Stage 2 |
+
+Stage 사이에 주고받는 파일 형식과 최종 출력은 [docs/interfaces.md](docs/interfaces.md), 공유 시트 양식은 [docs/templates/](docs/templates/README.md).
+
 ## 장비 역할
 
 | 장비 | 역할 |
@@ -76,11 +85,11 @@ python scripts/parse_accident_types.py "docs/aihub/1-56 교통사고 영상 데�
 ## 3단계: 평가용 분할과 라벨링 대상
 
 ```bash
-python scripts/make_splits.py --annotators 이름1 이름2 이름3 이름4 이름5 --extract
+python scripts/make_splits.py --annotators 정식 팀원 --extract
 ```
 
 - `data/splits/video_split.csv` — 영상 이름 해시로 20%를 평가용(test)으로 고정 (15,841 / 4,011). 같은 스크립트를 돌리면 누구나 같은 분할이 나온다
-- `data/splits/stage2_labeling.csv` — Stage 2 시점 라벨링 300건. 블랙박스·1인칭·코드 확인된 영상 중, 차대차 끼어들기류 120 / 차대차 기타 60 / 이륜차 50 / 자전거 35 / 보행자 35. 사고유형 225종이 섞이고, 50건은 2명 중복 배정 (1인당 70건)
+- `data/splits/stage2_labeling.csv` — Stage 2 시점 라벨링 300건. 블랙박스·1인칭·코드 확인된 영상 중, 차대차 끼어들기류 120 / 차대차 기타 60 / 이륜차 50 / 자전거 35 / 보행자 35. 사고유형 225종이 섞이고, 50건은 두 사람이 중복 라벨링 (1인당 175건)
 - `--extract` — 대상 영상 300개(2.1GB)를 `data/raw/stage2_labeling/`에 푼다 (약 1분)
 
 라벨링 기준은 [docs/labeling_guide.md](docs/labeling_guide.md).
@@ -123,5 +132,5 @@ data/inventory/ 인벤토리 CSV (git 제외)
 data/raw/       선별해 풀어 둔 영상 (git 제외)
 data/cache/     전처리 캐시 (git 제외)
 data/comma2k19/ comma2k19 zip과 Stage 3 라벨 (git 제외)
-docs/           라벨링 기준표, 회의록
+docs/           연결 규격, 라벨링 기준표, 시트 양식, 회의록
 ```

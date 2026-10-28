@@ -1,0 +1,3 @@
+date,start,end,gpu,person,stage,task,wandb_run,planned_hours,actual_hours,runpod_cost_usd,notes
+2026-11-02,20:00,23:00,RTX4060,B,common,AI Hub 300건 검출·추적 캐시 생성,,3,,,예시 행 — 지우고 사용
+2026-11-03,10:00,14:00,RTX5060,A,stage3,GRU 베이스라인 Chunk1~3,stage3-gru-flow-v1-A,4,,,예시 행 — 지우고 사용

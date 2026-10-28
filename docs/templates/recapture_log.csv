@@ -1,0 +1,2 @@
+clip_id,source_video,source_split,display_type,display_model,refresh_hz,phone_model,distance_cm,angle_deg,room_light,screen_brightness,holding,orientation,shooter,date,notes
+R0001,(원본 video_name),(video_split.csv의 split_ours),monitor,(모델명),60,(휴대폰 모델),50,0,normal,high,handheld,landscape,A,2026-11-05,예시 행 — 지우고 사용
