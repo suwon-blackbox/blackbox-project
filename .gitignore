@@ -32,3 +32,27 @@ configs/paths.local.yaml
 
 # AI Hub 배포 문서 (데이터설명서 등) — 재배포 금지라 git 제외
 docs/aihub/
+
+# 영상·압축 파일은 경로와 상관없이 제외 (실수로 다른 폴더에 둬도 안전)
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.zip
+*.7z
+*.tar
+*.tar.gz
+*.npy
+*.npz
+*.h5
+
+# 테스트·환경
+.pytest_cache/
+.env
+.env.*
+
+# OS·개인 설정
+Thumbs.db
+desktop.ini
+.DS_Store
+.claude/settings.local.json
